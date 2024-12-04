@@ -1,0 +1,154 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
+
+.container {
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid black;
+    background-color: ghostwhite;
+    padding-bottom: 20px;
+
+
+}
+
+.lowerHeading{
+    display: flex;
+    justify-content: normal;
+    gap: 1%;
+}
+
+.buttonWithSelect{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.btn{
+    width: 100px;
+    height: 100%;
+}
+
+.indicatorArea{
+    display: flex;
+    flex-direction: column;
+    align-content: space-around;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.stages{
+    display: flex;
+    flex-direction: row;
+}
+.indicatorAreaMulty{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+.indicator{
+ font-size: xxx-large;
+    margin-top: -15px;
+    margin-bottom: -5px;
+
+}
+
+.main {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    /*min-height: 250px;*/
+    /*height: 80vh;*/
+}
+
+.mainCenter {
+    min-width: 30%;
+    width: 100%;
+    display: inline-block;
+    border: 1px solid black;
+
+}
+
+/*----------------*/
+
+
+
+.mainRight {
+    width: 18%;
+    max-width: 23%;
+    border: 1px solid black;
+    padding-left: 2px;
+    font-size:small;
+
+
+}
+
+.mainLeft {
+    width: 20%;
+    min-width: 19%;
+    border: 1px solid black;
+    padding-right: 5px;
+    padding-left: 2px;
+    font-size:x-small;
+
+
+}
+
+.labelName{
+    margin-left:auto;
+    margin-right:auto;
+}
+.line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.paramChBox {
+    scale: 142%;
+}
+
+.plainField {
+    width: 30%;
+}
+
+/*sss*/
+.plainFieldLeftPart {
+    width: 70%;
+}
+
+
+/*sss*/
+.textHeading{
+    font-weight: bolder;
+}
+
+.inputItem {
+    padding-left: 10px;
+    display: flex;
+    justify-content: normal;
+}
+
+.selector1 {
+    width: 100%
+}
+
+.field1{
+    width: 100%
+}
+
+.inputTitle {
+    width: 80%;
+}
+
+
