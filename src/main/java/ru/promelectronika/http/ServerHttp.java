@@ -100,13 +100,6 @@ public class ServerHttp {
             headersResponse.add("Access-Control-Allow-Origin", exchange.getRequestHeaders().get("Origin").get(0));
 
             System.out.println("GOT IN the method");
-            double dCorA = 11.0;
-            double dCorB = 22.0;
-//            if (!DataBaseSimple.getObjectsBase().isEmpty()) {
-//                DataDto dto = (DataDto) DataBaseSimple.getObjectsBase().pollLast();
-//                dCorA = dto.getCoordinateA();
-//                dCorB = dto.getCoordinateB();
-//            }
 
             Map<String,Object> dataMap = new HashMap<>();
 

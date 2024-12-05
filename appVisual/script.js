@@ -26,9 +26,8 @@ let checkBoxCPDutyCycle = document.getElementById("cb_cp_duty_cycle");
 let checkBoxDtMsg = document.getElementById("cb_dt_msg");
 let checkBoxStage = document.getElementById("cb_stage");
 
-
-
-
+let counter = 0;
+var lastV = 0;
 function getDataXMLHttpRequest() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'http://127.0.0.1:3060/get_data', false);
@@ -46,24 +45,34 @@ function getDataXMLHttpRequest() {
     // console.log(jsonObj["sentData"]["ev_u"])
 
 
-    try {
-        // builds horizontal line
+    try { // increases our x-axis
+         if((jsonObj["sentData"]!==undefined && jsonObj["sentData"]!==null) ||
+             (jsonObj["receivedData"]!==undefined && jsonObj["receivedData"]!==null)){
+        chart1.data.labels.push(new Date());
+        counter++;
+
+      }
+
+
         if (jsonObj["sentData"] !== null || jsonObj["sentData"] !== undefined) {
             // building graphs with outgoing params  __________________________
-            buildGraphAndCB("evse_U", dataSetEVSE_U, jsonObj["sentData"],checkBoxEVSE_U);
-            buildGraphAndCB("evse_I", dataSetEVSE_I, jsonObj["sentData"],checkBoxEVSE_I);
-            buildGraphAndCB("cp_U", dataSetCP_U, jsonObj["sentData"],checkBoxCP_U);
-            buildGraphAndCB("cp_Freq", dataSetCP_Freq, jsonObj["sentData"],checkBoxCPFreq);
-            buildGraphAndCB("cp_DutyCicle", dataSetCP_DutyCycle, jsonObj["sentData"],checkBoxCPDutyCycle);
-            buildGraphAndCB("dt_message", dataSetDt_message, jsonObj["sentData"],checkBoxDtMsg);
-            buildGraphAndCB("stage", dataSetStage, jsonObj["sentData"],checkBoxStage);
+
+            buildGraphAndCB("evse_U", dataSetEVSE_U, jsonObj["sentData"], checkBoxEVSE_U);
+            buildGraphAndCB("evse_I", dataSetEVSE_I, jsonObj["sentData"], checkBoxEVSE_I);
+            buildGraphAndCB("cp_U", dataSetCP_U, jsonObj["sentData"], checkBoxCP_U);
+            buildGraphAndCB("cp_Freq", dataSetCP_Freq, jsonObj["sentData"], checkBoxCPFreq);
+            buildGraphAndCB("cp_DutyCicle", dataSetCP_DutyCycle, jsonObj["sentData"], checkBoxCPDutyCycle);
+            buildGraphAndCB("dt_message", dataSetDt_message, jsonObj["sentData"], checkBoxDtMsg);
+            buildGraphAndCB("stage", dataSetStage, jsonObj["sentData"], checkBoxStage);
         }
         if (jsonObj["receivedData"] !== null || jsonObj["receivedData"] !== undefined) {
-            buildGraphAndCB("ev_u", dataSetEV_U, jsonObj["receivedData"],checkBoxEv_U);
-            buildGraphAndCB("ev_i", dataSetEV_I, jsonObj["receivedData"],checkBoxEv_I);
+            buildGraphAndCB("ev_u", dataSetEV_U, jsonObj["receivedData"], checkBoxEv_U);
+            buildGraphAndCB("ev_i", dataSetEV_I, jsonObj["receivedData"], checkBoxEv_I);
         }
-        if (jsonObj["receivedData"] !== null || jsonObj["sentData"] !== null) {
-            buildAxisX();
+        if (jsonObj["sentData"] !== null|| jsonObj["sentData"] !== undefined ) {
+            // console.log(jsonObj["receivedData"])
+            // chart1.data.labels.push(counter);
+            // console.log(counter + " COUNT")
         }
 
     } catch (e) {
@@ -73,21 +82,19 @@ function getDataXMLHttpRequest() {
 }
 
 
-
 setInterval(getDataXMLHttpRequest, 1000);
-
 
 
 // time delay
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 // await sleep(500);
-let counter = 0;
+
 
 
 // GRAPH BUILDERS
-async function buildGraphAndCB(paramName, dataSet, array,checkBoxState) {
-    if (checkBoxState.checked===true) {
-    buildGraph(paramName, dataSet, array)
+async function buildGraphAndCB(paramName, dataSet, array, checkBoxState) {
+    if (checkBoxState.checked === true) {
+        buildGraph(paramName, dataSet, array)
     }
 }
 
@@ -99,14 +106,17 @@ async function buildGraph(paramName, dataSet, array) {
         if (!isNaN(number)) {
             console.log(number + "N")
             dataSet.data.push(number);
+            console.log(dataSet.data)
         }
         chart1.update();
     }
 }
 
-async function buildAxisX() {
+function buildAxisX() {
     chart1.data.labels.push(counter);
     counter++;
+    console.log(counter)
+
 }
 
 
@@ -136,6 +146,7 @@ function createDataSet(label, backgroundColor, borderColor) {
         lineTension: 0,
         backgroundColor: backgroundColor,
         borderColor: borderColor,
+        fill: false,
         data: [],
         borderWidth: 1
     }
@@ -143,7 +154,32 @@ function createDataSet(label, backgroundColor, borderColor) {
 
 
 // Mind it with especial carefulness!
-let chart1 = new Chart(ctx, {
+//  let chart1 = new Chart(ctx, {
+//     type: 'line',
+// //     data: {
+//         labels: [],
+//         datasets: [dataSetEV_U, dataSetEV_I, dataSetEVSE_U, dataSetEVSE_I, dataSetCP_U,
+//             dataSetCP_Freq, dataSetCP_DutyCycle, dataSetStage, dataSetDt_message]
+//     },
+//     options: {
+//         scales: {
+//             y: {
+//                 beginAtZero: true
+//             }
+//         }
+//     },
+//     pan: {
+//         enabled: true,
+//         mode: 'xy',
+//     },
+//     zoom: {
+//         enabled: true,
+//         mode: 'xy', // or 'x' for "drag" version
+//     },
+//
+// })
+
+const config = {
     type: 'line',
     data: {
         labels: [],
@@ -152,9 +188,23 @@ let chart1 = new Chart(ctx, {
     },
     options: {
         scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-})
+            xAxes: [{
+                type: 'time',
+            }, ],
+        },
+        pan: {
+            enabled: true,
+            mode: 'xy',
+        },
+        zoom: {
+            enabled: true,
+            mode: 'xy', // or 'x' for "drag" version
+        },
+    },
+};
+
+var chart1;
+window.onload = function () {
+    chart1 = new Chart(document.getElementById('chart'), config);
+};
+
