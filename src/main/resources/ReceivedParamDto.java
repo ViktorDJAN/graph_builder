@@ -1,6 +1,6 @@
 package ru.promelectronika.dto;
 
-public class SentParamDto {
+public class ReceivedParamDto {
     private int startStop;
     private float ev_u;
     private float ev_i;
@@ -15,22 +15,22 @@ public class SentParamDto {
     private int contactorStatus;
     private int protocol;
 
-    public SentParamDto() {
+    public ReceivedParamDto() {
     }
 
-    public SentParamDto(int startStop,
-                        float ev_u,
-                        float ev_i,
-                        float ev_maxU,
-                        float ev_maxI,
-                        float ev_maxP,
-                        int timeCharge,
-                        int cp_on,
-                        int err_code,
-                        int ready,
-                        int soc,
-                        int contactorStatus,
-                        int protocol) {
+    public ReceivedParamDto(int startStop,
+                            float ev_u,
+                            float ev_i,
+                            float ev_maxU,
+                            float ev_maxI,
+                            float ev_maxP,
+                            int timeCharge,
+                            int cp_on,
+                            int err_code,
+                            int ready,
+                            int soc,
+                            int contactorStatus,
+                            int protocol) {
         this.startStop = startStop;
         this.ev_u = ev_u;
         this.ev_i = ev_i;
@@ -152,7 +152,7 @@ public class SentParamDto {
 
     @Override
     public String toString() {
-        return "SentParamDto{" +
+        return "ReceivedParamDto{" +
                 "startStop=" + startStop +
                 ", ev_u=" + ev_u +
                 ", ev_i=" + ev_i +

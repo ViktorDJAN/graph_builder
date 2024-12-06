@@ -6,11 +6,9 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import ru.promelectronika.dto.DataBaseSimple;
-import ru.promelectronika.dto.DataDto;
-import ru.promelectronika.dto.ReceivedParamDto;
 import ru.promelectronika.dto.SentParamDto;
+import ru.promelectronika.dto.ReceivedParamDto;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -106,6 +104,7 @@ public class ServerHttp {
             if(!DataBaseSimple.getSentMsgDataBase().isEmpty()){
                 SentParamDto sentParamDto =  DataBaseSimple.getSentMsgDataBase().pollFirst();
                 dataMap.put("sentData", sentParamDto);
+
 
             }
             if(!DataBaseSimple.getReceivedMsgDataBase().isEmpty()){

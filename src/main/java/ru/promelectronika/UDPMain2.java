@@ -1,9 +1,8 @@
 package ru.promelectronika;
 
 import ru.promelectronika.dto.DataBaseSimple;
-import ru.promelectronika.dto.DataDto;
-import ru.promelectronika.dto.ReceivedParamDto;
 import ru.promelectronika.dto.SentParamDto;
+import ru.promelectronika.dto.ReceivedParamDto;
 import ru.promelectronika.http.ServerHttp;
 
 import java.io.IOException;
@@ -48,6 +47,8 @@ public class UDPMain2 { // UDP-Client
                             DatagramPacket datagramPacketSent = new DatagramPacket(array, array.length, ip, 11000); // 11000 is SEWD TO distanation address
                             clientSocket.send(datagramPacketSent);
                             DataBaseSimple.getSentMsgDataBase().add(dto1);
+                            System.out.println("SEND________DATABASE: " + DataBaseSimple.getSentMsgDataBase().size());
+
                             counter++;
                             System.out.println("Counter value while sending = "+counter +"__sent: " +DataBaseSimple.getSentMsgDataBase().peekFirst());
                             Thread.sleep(1000);
@@ -63,7 +64,7 @@ public class UDPMain2 { // UDP-Client
                     ReceivedParamDto receivedParamDto = unPackDataToDto(data);
                     DataBaseSimple.getReceivedMsgDataBase().add(receivedParamDto);
 
-                    System.out.println(DataBaseSimple.getReceivedMsgDataBase().add(receivedParamDto) + "__AFTER");
+                    System.out.println(DataBaseSimple.getReceivedMsgDataBase().peekFirst() + "__AFTER");
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -80,20 +81,20 @@ public class UDPMain2 { // UDP-Client
     // to send data  44 bytes  // OUTPUT PARAMS
     public static byte[] packDtoToByteArray(SentParamDto dto) {
         List<Byte> bytesData = new ArrayList<>();
-        byte[] dataArray = new byte[44];
-        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getEvse_U()).array()));
-        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getEvse_I()).array()));
-        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getEvse_maxU()).array()));
-        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getEvse_maxI()).array()));
-        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getEvse_maxP()).array()));
-        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getCP_U()).array()));
-        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getCP_Freq()).array()));
-        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getCP_DutyCicle()).array()));
-        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getDT_message()).array()));
-        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putInt(dto.getStage()).array()));
-        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putInt(dto.getContactorRequest()).array()));
-
-
+        byte[] dataArray = new byte[52];
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putInt(dto.getStartStop()).array()));
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getEv_u()).array()));
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getEv_i()).array()));
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getEv_maxU()).array()));
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getEv_maxI()).array()));
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putFloat(dto.getEv_maxP()).array()));
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putInt(dto.getTimeCharge()).array()));
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putInt(dto.getCp_on()).array()));
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putInt(dto.getErr_code()).array()));
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putInt(dto.getReady()).array()));
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putInt(dto.getSoc()).array()));
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putInt(dto.getContactorStatus()).array()));
+        addByteToByteArray(bytesData, rotateArray(ByteBuffer.allocate(4).putInt(dto.getProtocol()).array()));
         for (int i = 0; i < bytesData.size(); i++) {
             dataArray[i] = bytesData.get(i);
         }
@@ -132,8 +133,7 @@ public class UDPMain2 { // UDP-Client
         byte[] slice32 = new byte[4];
         byte[] slice36 = new byte[4];
         byte[] slice40 = new byte[4];
-        byte[] slice44 = new byte[4];
-        byte[] slice48 = new byte[4];
+
 
         for (int i = 0; i < gottenData.length; i++) {
             if (i <= 3) {
@@ -168,13 +168,8 @@ public class UDPMain2 { // UDP-Client
             } else if (i >= 40 && i < 44) {
                 slice40[i - 40] = gottenData[i];
 
-            } else if (i >= 44 && i < 48) {
-                slice44[i - 44] = gottenData[i];
+           }
 
-            } else if (i >= 48 && i < 52) {
-                slice48[i - 48] = gottenData[i];
-
-            }
         }
         ByteBuffer bb1 = ByteBuffer.wrap(slice0).order(ByteOrder.LITTLE_ENDIAN);
         ByteBuffer bb2 = ByteBuffer.wrap(slice4).order(ByteOrder.LITTLE_ENDIAN);
@@ -187,51 +182,33 @@ public class UDPMain2 { // UDP-Client
         ByteBuffer bb9 = ByteBuffer.wrap(slice32).order(ByteOrder.LITTLE_ENDIAN);
         ByteBuffer bb10 = ByteBuffer.wrap(slice36).order(ByteOrder.LITTLE_ENDIAN);
         ByteBuffer bb11 = ByteBuffer.wrap(slice40).order(ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer bb12 = ByteBuffer.wrap(slice44).order(ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer bb13 = ByteBuffer.wrap(slice48).order(ByteOrder.LITTLE_ENDIAN);
 
-        int startStop = bb1.getInt();
-        float ev_u = bb2.getFloat();
-        float ev_i = bb3.getFloat();
-        float ev_maxU = bb4.getFloat();
-        float ev_maxI = bb5.getFloat();
-        float ev_maxP = bb6.getFloat();
-        int timeCharge = bb7.getInt();
-        int cpOn = bb8.getInt();
-        int errCode = bb9.getInt();
-        int ready = bb10.getInt();
-        int soc = bb11.getInt();
-        int contactorStatus = bb12.getInt();
-        int protocol = bb13.getInt();
+        float evse_u = bb1.getFloat();
+        float evse_i = bb2.getFloat();
+        float evse_maxU = bb3.getFloat();
+        float evse_maxI = bb4.getFloat();
+        float evse_maxP = bb5.getFloat();
+        float cp_u= bb6.getFloat();
+        float cp_freq = bb7.getFloat();
+        float cp_dutyCycle = bb8.getFloat();
+        float dt_message = bb9.getFloat();
+        int stage = bb10.getInt();
+        int contactorRequest = bb11.getInt();
 
-        ReceivedParamDto receivedParamDto = new ReceivedParamDto();
-        receivedParamDto.setStartStop(startStop);
-        receivedParamDto.setEv_u(ev_u);
-        receivedParamDto.setEv_i(ev_i);
-        receivedParamDto.setEv_maxU(ev_maxU);
-        receivedParamDto.setEv_maxI(ev_maxI);
-        receivedParamDto.setEv_maxP(ev_maxP);
-        receivedParamDto.setTimeCharge(timeCharge);
-        receivedParamDto.setCp_on(cpOn);
-        receivedParamDto.setErr_code(errCode);
-        receivedParamDto.setReady(ready);
-        receivedParamDto.setSoc(soc);
-        receivedParamDto.setContactorStatus(contactorStatus);
-        receivedParamDto.setProtocol(protocol);
-
-
-        return receivedParamDto;
+        return new ReceivedParamDto(evse_u,evse_i,evse_maxU,evse_maxI,evse_maxP,cp_u,cp_freq,cp_dutyCycle,dt_message,stage,contactorRequest);
     }
 
     public static List<SentParamDto> getSentParams() {
         List<SentParamDto> dtoList = new ArrayList<>();
-        dtoList.add(new SentParamDto(210.5f, 12, 3, 4, 5, 26, 7.5f, 18, 500, 10, 1));
-        dtoList.add(new SentParamDto(220.5f, 21, 3, 4, 5, 26, 5.1f, 28, 500, 10, 1));
-        dtoList.add(new SentParamDto(220.5f, 32, 3, 4, 5, 36, 7.0f, 38, 500, 10, 0));
-        dtoList.add(new SentParamDto(240.5f, 32, 3, 4, 5, 86, 6.0f, 18, 500, 7, 0));
-        dtoList.add(new SentParamDto(260.5f, 43, 3, 4, 5, 36, 5.4f, 38, 400, 8, 0));
-        dtoList.add(new SentParamDto(260.5f, 22, 3, 4, 5, 26, 5.1f, 18, 400, 8, 1));
-        dtoList.add(new SentParamDto(270.5f, 21, 3, 4, 5, 26, 3.2f, 38, 300, 9, 1));
+        dtoList.add(new SentParamDto(0,400,20,800,40,150,60000,0,3,1,40,0,0));
+        dtoList.add(new SentParamDto(0,400,20,800,40,150,60000,0,3,1,40,0,0));
+        dtoList.add(new SentParamDto(1,500,50,800,40,150,60000,1,5,1,50,1,0));
+        dtoList.add(new SentParamDto(1,500,50,800,40,150,60000,1,5,1,60,1,0));
+        dtoList.add(new SentParamDto(1,500,50,800,40,150,50000,1,5,1,70,1,0));
+        dtoList.add(new SentParamDto(1,500,50,800,40,150,50000,1,5,1,100,1,0));
+        dtoList.add(new SentParamDto(0,300,30,800,40,150,30000,0,3,0,100,0,1));
+        dtoList.add(new SentParamDto(0,200,20,800,40,150,20000,0,3,0,100,0,1));
+
 
         return dtoList;
     }

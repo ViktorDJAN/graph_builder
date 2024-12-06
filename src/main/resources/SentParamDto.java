@@ -1,6 +1,6 @@
 package ru.promelectronika.dto;
 
-public class ReceivedParamDto {
+public class SentParamDto {
     private float evse_U;
     private float evse_I;
     private float evse_maxU;
@@ -13,20 +13,20 @@ public class ReceivedParamDto {
     private int stage;
     private int contactorRequest;
 
-    public ReceivedParamDto() {
+    public SentParamDto() {
     }
 
-    public ReceivedParamDto(float evse_U,
-                            float evse_I,
-                            float evse_maxU,
-                            float evse_maxI,
-                            float evse_maxP,
-                            float CP_U,
-                            float CP_Freq,
-                            float CP_DutyCicle,
-                            float DT_message,
-                            int stage,
-                            int contactorRequest) {
+    public SentParamDto(float evse_U,
+                        float evse_I,
+                        float evse_maxU,
+                        float evse_maxI,
+                        float evse_maxP,
+                        float CP_U,
+                        float CP_Freq,
+                        float CP_DutyCicle,
+                        float DT_message,
+                        int stage,
+                        int contactorRequest) {
         this.evse_U = evse_U;
         this.evse_I = evse_I;
         this.evse_maxU = evse_maxU;
@@ -130,7 +130,7 @@ public class ReceivedParamDto {
 
     @Override
     public String toString() {
-        return "ReceivedParamsDto{" +
+        return "SentParamsDto{" +
                 "evse_U=" + evse_U +
                 ", evse_I=" + evse_I +
                 ", evse_maxU=" + evse_maxU +

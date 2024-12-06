@@ -1,7 +1,6 @@
 package ru.promelectronika;
 
 import ru.promelectronika.dto.ReceivedParamDto;
-import ru.promelectronika.dto.SentParamDto;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
@@ -23,7 +22,7 @@ public class TestMain2 {
         float a1 = 1;
         float a2 = 2;
 
-        SentParamDto dto = new SentParamDto();
+        ReceivedParamDto dto = new ReceivedParamDto();
         dto.setEvse_U(1);
         dto.setEvse_I(2);
         dto.setEvse_maxU(3);
@@ -41,7 +40,7 @@ public class TestMain2 {
 
     }
 
-    public static byte[] getPackedByteArray(SentParamDto dto) {
+    public static byte[] getPackedByteArray(ReceivedParamDto dto) {
         List<Byte>bytesData = new ArrayList<>();
         byte[] dataArray = new byte[44];
         addByteToByteArray(bytesData,rotateArray(ByteBuffer.allocate(4).putFloat(dto.getEvse_U()).array()));
@@ -69,7 +68,7 @@ public class TestMain2 {
         }
     }
     // to send data  44 bytes
-    public static byte[] packDataToByteArray(SentParamDto dto){
+    public static byte[] packDataToByteArray(ReceivedParamDto dto){
 
         return null;
     }
