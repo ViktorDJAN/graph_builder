@@ -1,19 +1,25 @@
 package ru.promelectronika.dto;
 
+import ru.promelectronika.enums.ColorTuner;
+
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 public class SentParamDto {
-    private int startStop;
-    private float ev_u;
-    private float ev_i;
-    private float ev_maxU;
-    private float ev_maxI;
-    private float ev_maxP;
-    private int timeCharge;
-    private int cp_on;
-    private int err_code;
-    private int ready;
-    private int soc;
-    private int contactorStatus;
-    private int protocol;
+    private int startStop;//
+    private float ev_u;//
+    private float ev_i;//
+    private float ev_maxU;//
+    private float ev_maxI;//
+    private float ev_maxP;//
+    private int timeCharge;//
+    private int cp_on;//
+    private int err_code;//
+    private int ready;//
+    private int soc;//
+    private int contactorStatus;//
+    private int protocol;//
 
     public SentParamDto() {
     }
@@ -45,6 +51,28 @@ public class SentParamDto {
         this.contactorStatus = contactorStatus;
         this.protocol = protocol;
     }
+
+    //Data: 00 00 00 00 = 0             ===      0, 0, 0, 0,
+    //      00 00 48 43  =200           ===      0, 0, 72, 67,
+    //      00 00 a0 40  =5             ===      0, 0, -96, 64,
+    //      00 80 3b 44  =750           ===      0, -128, 59, 68,
+    //      00 00 fa 43  =500           ===      0, 0, -6, 67,
+    //      00 00 96 43  =300           ===      0, 0, -106, 67,
+    //      58 02 00 00  = 600 int      ===      88, 2, 0, 0,
+    //      01 00 00 00  = 1   int      ===      1, 0, 0, 0,
+    //      00 00 00 00  =0    int      ===      0, 0, 0, 0,
+    //      01 00 00 00  =1    int      ===      1, 0, 0, 0,
+    //      33 00 00 00  =51   int      ===      51, 0, 0, 0,
+    //      00 00 00 00  =0    int      ===      0, 0, 0, 0,
+    //      00 00 00 00  =0    int      ===      0, 0, 0, 0
+
+
+
+
+
+
+
+
 
     public int getStartStop() {
         return startStop;

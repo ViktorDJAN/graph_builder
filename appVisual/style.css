@@ -122,6 +122,9 @@
     width: 30%;
 }
 
+
+
+
 /*sss*/
 .plainFieldLeftPart {
     width: 70%;
@@ -146,6 +149,11 @@
 .field1{
     width: 100%
 }
+.field1ReadOnly{
+    width: 100%;
+    color:gray;
+}
+
 
 .inputTitle {
     width: 80%;

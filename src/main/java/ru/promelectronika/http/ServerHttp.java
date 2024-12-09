@@ -5,9 +5,11 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import ru.promelectronika.dataPacker.DataParser;
 import ru.promelectronika.dto.DataBaseSimple;
 import ru.promelectronika.dto.SentParamDto;
 import ru.promelectronika.dto.ReceivedParamDto;
+import ru.promelectronika.enums.ColorTuner;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,19 +26,18 @@ public class ServerHttp {
     private static ObjectMapper mapper = new ObjectMapper();
 
     public static void startHttpServer(String host, int port) throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(host, port), 0);
+        server = HttpServer.create(new InetSocketAddress(host, port), 0);
         server.createContext("/hello", new MyHandler1());
-        server.createContext("/post_data", new MyHandler2());
-        server.createContext("/get_data", new MyHandler3());
+        server.createContext("/postDataToJava", new MyHandler2());
+        server.createContext("/getDataFromJava", new MyHandler3());
         server.setExecutor(null); // creates a default executor
         server.start();
-        System.out.println("Server started at " + server.getAddress());
+        System.out.println( ColorTuner.GREEN +  "Server started at " + server.getAddress() + ColorTuner.RESET);
     }
 
     static class MyHandler1 implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-
             System.out.println("GOT IN the method");
             String response = "<h1>Hello</h1>";
             exchange.sendResponseHeaders(200, response.length());//response code and length
@@ -53,80 +54,74 @@ public class ServerHttp {
         }
     }
 
+    // POST and GATHER DATA FROM JAVASCRIPT  TO JAVA
     static class MyHandler2 implements HttpHandler {
-
         @Override
-        public void handle(HttpExchange t) throws IOException {
+        public void handle(HttpExchange exchange) throws IOException {
             String requestedMessage = "";
-            HashMap<String, Double> hashMapData = new HashMap<>(); // send in Postman this => {"Johnson":2.0,"John":1.0,"Voltage":220.0,"Ampere":32}
-            System.out.println("MyHandle2 is : " + t.getRequestMethod() + " " + t.getRequestURI());
-            if (t.getRequestMethod().equals("POST")) {
-                requestedMessage = getString(t.getRequestBody()); // getRequestBody is input stream
-                t.getRequestBody().close();
+            if (exchange.getRequestMethod().equals("POST")) {
+                requestedMessage = getString(exchange.getRequestBody()); // getRequestBody is input stream
+                exchange.getRequestBody().close();
             } else {
                 System.err.println("Sorry! It is not Post Method");
             }
             if (!requestedMessage.isEmpty()) {
-                hashMapData = mapper.readValue(requestedMessage, HashMap.class);
-                System.out.println("Gotten in request msg: " + hashMapData.toString());
-                System.err.println(hashMapData.get("Voltage"));
-
+//                hashMapData = mapper.readValue(requestedMessage, HashMap.class);
+                // took data from screen
+                SentParamDto sentParamDto = mapper.readValue(requestedMessage, SentParamDto.class);
+                byte [] ar = DataParser.packSentDtoToByteArray(sentParamDto);
+                DataBaseSimple.getSentMsgDataBase().add(sentParamDto);
+                System.out.println(ColorTuner.GREEN + "SENT-PARAM _DTO " + sentParamDto + ColorTuner.RESET +" ; SIZE _" + DataBaseSimple.getSentMsgDataBase().size());
             } else {
                 System.out.println("Sorry there is nothing to read out");
             }
 
-
             // In here is forming headers that we send if everything is ok
-            Headers responseHeaders = t.getResponseHeaders(); // create response header
-            responseHeaders.add("Content-Type", "text/plain"); // specify type and content info
+            Headers responseHeaders = exchange.getResponseHeaders(); // create response header
+            responseHeaders.add("Access-Control-Allow-Origin", exchange.getRequestHeaders().get("Origin").get(0)); // specify type and content info
             String response = "Got the message: \n" + requestedMessage; // form response
-            t.sendResponseHeaders(200, response.length()); // send response headers
-            OutputStream os = t.getResponseBody(); // returns output stream to which the response body must be written.
+            exchange.sendResponseHeaders(200, response.length()); // send response headers
+            OutputStream os = exchange.getResponseBody(); // returns output stream to which the response body must be written.
             os.write(response.getBytes()); // cast it to bytes
             os.close(); // close stream
 
 
         }
     }
-
+// GET : FROM JAVA TO JAVASCRIPT
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     static class MyHandler3 implements HttpHandler {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+
             Headers headersResponse = exchange.getResponseHeaders();
             headersResponse.add("Access-Control-Allow-Origin", exchange.getRequestHeaders().get("Origin").get(0));
+            Map<String, Object> dataMap = new HashMap<>();
 
-            System.out.println("GOT IN the method");
-
-            Map<String,Object> dataMap = new HashMap<>();
-
-            if(!DataBaseSimple.getSentMsgDataBase().isEmpty()){
-                SentParamDto sentParamDto =  DataBaseSimple.getSentMsgDataBase().pollFirst();
+            if (!DataBaseSimple.getSentMsgDataBase().isEmpty()) {
+                SentParamDto sentParamDto = DataBaseSimple.getSentMsgDataBase().peekLast();
                 dataMap.put("sentData", sentParamDto);
-
-
             }
-            if(!DataBaseSimple.getReceivedMsgDataBase().isEmpty()){
-                ReceivedParamDto receivedParamDto =  DataBaseSimple.getReceivedMsgDataBase().pollFirst();
+            if (!DataBaseSimple.getReceivedMsgDataBase().isEmpty()) {
+                System.out.println(ColorTuner.GREEN + "before size received base: "+ DataBaseSimple.getReceivedMsgDataBase().size() + ColorTuner.RESET);
+                ReceivedParamDto receivedParamDto = DataBaseSimple.getReceivedMsgDataBase().pollFirst();
+                System.out.println(ColorTuner.BLUE + " after size received base: "+ DataBaseSimple.getReceivedMsgDataBase().size() + ColorTuner.RESET);
+
                 dataMap.put("receivedData", receivedParamDto);
             }
-
             ObjectMapper mapper = new ObjectMapper();
             String response = mapper.writeValueAsString(dataMap);
-            System.err.println("HERE"+response);
             exchange.sendResponseHeaders(200, response.length());//response code and length
             OutputStream responseBody = exchange.getResponseBody();// stream where response body must be written
             responseBody.write(response.getBytes());
             responseBody.close();
-            System.out.println(exchange.getRequestHeaders().get("Origin"));
 
-
-            if (!exchange.getResponseHeaders().isEmpty()) {
-                System.out.println("NyHandler3 has a response" + exchange.getResponseHeaders().toString());
-            } else {
-                System.out.println("NyHandler3 doesn't have any response");
-            }
+//            if (!exchange.getResponseHeaders().isEmpty()) {
+//                System.out.println("NyHandler3 has a response" + exchange.getResponseHeaders().toString());
+//            } else {
+//                System.out.println("NyHandler3 doesn't have any response");
+//            }
 
         }
     }
@@ -138,6 +133,9 @@ public class ServerHttp {
                 .useDelimiter("\\z") // what you want to use as like delimiter
                 .next();
     }
+
+
+
 
 
     public static HttpServer getServer() {
