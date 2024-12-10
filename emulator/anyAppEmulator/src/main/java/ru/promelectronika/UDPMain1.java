@@ -9,110 +9,119 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class UDPMain1 { // UDP-Server
-    public static void main(String[] args) throws IOException {// write there null obligatorily to mind your custom address
-        InetSocketAddress clientIp = new InetSocketAddress("127.0.0.1", 10450);
-        InetSocketAddress serverIp = new InetSocketAddress("127.0.0.1", 11000);
+    static int count = 0;
+    static List<byte[]> arrays;
+    static DatagramSocket serverSocket;
+    static InetSocketAddress clientIp = new InetSocketAddress("127.0.0.1", 10000);
+    static InetSocketAddress serverIp = new InetSocketAddress("127.0.0.1", 11000);
 
+    public static void main(String[] args) throws IOException, InterruptedException {// write there null obligatorily to mind your custom address
+
+
+//        List<byte[]> arrays;
         // to send         // done well
         byte[] array1 = new byte[]{(byte) 0x00, (byte) 0x80, (byte) 0x3b, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x20, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
-                                   (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
-                                   (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
-                                   (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+                (byte) 0x00, (byte) 0x00, (byte) 0x20, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
+                (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
+                (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
+                (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
+                (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
+                (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
         byte[] array2 = new byte[]{(byte) 0x00, (byte) 0x80, (byte) 0x31, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
-                                   (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
-                                   (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
-                                   (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+                (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
+                (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
+                (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
+                (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
+                (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
+                (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
         byte[] array3 = new byte[]{(byte) 0x00, (byte) 0x80, (byte) 0x21, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
-                                   (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
-                                   (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
-                                   (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+                (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
+                (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
+                (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
+                (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
+                (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
+                (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
         byte[] array4 = new byte[]{(byte) 0x00, (byte) 0x80, (byte) 0x11, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
-                                   (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
-                                   (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
-                                   (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+                (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
+                (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
+                (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
+                (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
+                (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
+                (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
         byte[] array5 = new byte[]{(byte) 0x00, (byte) 0x80, (byte) 0x11, (byte) 0x44,
-                                  (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
-                                  (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
-                                  (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
-                                  (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
-                                  (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
-                                  (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
-                                  (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
-                                  (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
-                                  (byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-                                  (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+                (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
+                (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
+                (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
+                (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
+                (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
+                (byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
         byte[] array6 = new byte[]{(byte) 0x00, (byte) 0x80, (byte) 0x11, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0xc8, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
-                                   (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
-                                   (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
-                                   (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+                (byte) 0x00, (byte) 0x00, (byte) 0xc8, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
+                (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
+                (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
+                (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
+                (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
+                (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
         byte[] array7 = new byte[]{(byte) 0x00, (byte) 0x80, (byte) 0x21, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x41,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
-                                   (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
-                                   (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
-                                   (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+                (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x41,
+                (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
+                (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
+                (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
+                (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
+                (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
+                (byte) 0x05, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
         byte[] array8 = new byte[]{(byte) 0x00, (byte) 0x80, (byte) 0x3f, (byte) 0x43,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x41,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
-                                   (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
-                                   (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
-                                   (byte) 0x0a, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-                                   (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+                (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x41,
+                (byte) 0x00, (byte) 0x00, (byte) 0x7a, (byte) 0x44,
+                (byte) 0x00, (byte) 0x00, (byte) 0xa0, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x70, (byte) 0x42,
+                (byte) 0x58, (byte) 0x02, (byte) 0xc0, (byte) 0x41,
+                (byte) 0x46, (byte) 0x1c, (byte) 0x06, (byte) 0x50,
+                (byte) 0x00, (byte) 0x00, (byte) 0x8c, (byte) 0x42,
+                (byte) 0x00, (byte) 0x00, (byte) 0x48, (byte) 0x43,
+                (byte) 0x0a, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
-        List<byte[]> arrays = new ArrayList<>();
+        arrays = new ArrayList<>();
         arrays.add(array1);
         arrays.add(array2);
         arrays.add(array3);
@@ -124,67 +133,91 @@ public class UDPMain1 { // UDP-Server
 
         int count = 0;
         ////////////////////
-        try (DatagramSocket serverSocket = new DatagramSocket(null)) {
-            serverSocket.bind(serverIp);
-            System.out.println("Get started: " + serverSocket.getLocalSocketAddress());
+
+        serverSocket = new DatagramSocket(null);
+        serverSocket.bind(serverIp);
+        System.out.println("Get started: " + serverSocket.getLocalSocketAddress());
 
 
-            byte[] receiveData;
-            byte[] buf = null;
-            while (true) {
-                receiveData = new byte[52];
-                DatagramPacket receivedPacket = new DatagramPacket(receiveData, receiveData.length);
-                // Receiving message...
-                serverSocket.receive(receivedPacket);
-                byte[] gottenData = receivedPacket.getData();
+        byte[] receiveData;
+        byte[] buf = null;
+        ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+        service.scheduleAtFixedRate(new SendToGBuilder(), 0, 1000, TimeUnit.MILLISECONDS);
+
+        while (true) {
+            receiveData = new byte[52];
+            DatagramPacket receivedPacket = new DatagramPacket(receiveData, receiveData.length);
+            // Receiving message...
+            serverSocket.receive(receivedPacket);
+            byte[] gottenData = receivedPacket.getData();
 
 
-                ArrayList<Number> values = parseDataToValuesArray52(gottenData);
-                System.out.println(values.get(0));
-                System.out.println(values.get(1));
-                System.out.println(values.get(2));
-                System.out.println(values.get(3));
-                System.out.println(values.get(4));
-                System.out.println(values.get(5));
-                System.out.println(values.get(6));
-                System.out.println(values.get(7));
-                System.out.println(values.get(8));
-                System.out.println(values.get(9));
-                System.out.println(values.get(10));
-                System.out.println(values.get(11));
-                System.out.println(values.get(12));
+            ArrayList<Number> values = parseDataToValuesArray52(gottenData);
+            System.out.println(values.get(0));
+            System.out.println(values.get(1));
+            System.out.println(values.get(2));
+            System.out.println(values.get(3));
+            System.out.println(values.get(4));
+            System.out.println(values.get(5));
+            System.out.println(values.get(6));
+            System.out.println(values.get(7));
+            System.out.println(values.get(8));
+            System.out.println(values.get(9));
+            System.out.println(values.get(10));
+            System.out.println(values.get(11));
+            System.out.println(values.get(12));
 
 
-                System.out.println("Msg length: " + receivedPacket.getLength());
-                String msg = String.valueOf(dataConvert(receiveData));
+            System.out.println("Msg length: " + receivedPacket.getLength());
 
 
-                if (msg.equals("bye")) {
-                    System.out.println("GOT STOP MESSAGE.BYE...");
-                    break;
-                }
-                // Sending response....
+            // Sending response....
 //                String line = "Ok. Got message you sent: " + msg;
 //                buf = line.getBytes();
 //                DatagramPacket packForSending = new DatagramPacket(buf, buf.length, clientIp.getAddress(), clientIp.getPort());
 //                serverSocket.send(packForSending);
 
-                for (byte[] array : arrays) {
-                    buf = array;
-                    System.err.println(buf);
-                    DatagramPacket packForSending = new DatagramPacket(buf, buf.length, clientIp.getAddress(), clientIp.getPort());
-                    if (count < 7) {
-                        serverSocket.send(packForSending);
-                        Thread.sleep(1000);
-                        count++;
-                    } else {
-                        break;
-                    }
+//                for (byte[] array : arrays) {
+//                    buf = array;
+//                    System.err.println(buf);
+//                    DatagramPacket packForSending = new DatagramPacket(buf, buf.length, clientIp.getAddress(), clientIp.getPort());
+//                    if (count < 8) {
+//                        serverSocket.send(packForSending);
+//                        Thread.sleep(1000);
+//                        count++;
+//                    } else {
+//                        break;
+//                    }
+//
+//                }
+        }
+    }
 
-                }
+
+    static class SendToGBuilder implements Runnable {
+        @Override
+        public void run() {
+            try {
+                sendMsg();
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
             }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        }
+    }
+
+    public static void sendMsg() throws IOException, InterruptedException {
+        for (int i = 0; i< arrays.size(); i++) {
+            byte[] buf = arrays.get(i);
+            DatagramPacket packForSending = new DatagramPacket(buf, buf.length, clientIp.getAddress(), clientIp.getPort());
+            if (count < 8) {
+                System.out.println("Message sent: count: " + count++ );
+                serverSocket.send(packForSending);
+                Thread.sleep(1000);
+
+            } else {
+                count=0;
+            }
+
         }
     }
 

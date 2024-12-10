@@ -19,15 +19,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class ServerHttp {
-    public static String renderMe = "RENDER";
     private static HttpServer server;
-    private static String typeConnector = "";
-    private static double maxInputW;
-    private static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     public static void startHttpServer(String host, int port) throws IOException {
         server = HttpServer.create(new InetSocketAddress(host, port), 0);
-        server.createContext("/hello", new MyHandler1());
+        server.createContext("/check", new MyHandler1());
         server.createContext("/postDataToJava", new MyHandler2());
         server.createContext("/getDataFromJava", new MyHandler3());
         server.setExecutor(null); // creates a default executor
@@ -39,7 +36,7 @@ public class ServerHttp {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             System.out.println("GOT IN the method");
-            String response = "<h1>Hello</h1>";
+            String response = "<h1>The Graph builder app is working...</h1>";
             exchange.sendResponseHeaders(200, response.length());//response code and length
             OutputStream responseBody = exchange.getResponseBody();
             responseBody.write(response.getBytes());

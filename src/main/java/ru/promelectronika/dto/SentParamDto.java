@@ -1,11 +1,5 @@
 package ru.promelectronika.dto;
 
-import ru.promelectronika.enums.ColorTuner;
-
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 public class SentParamDto {
     private int startStop;//
     private float ev_u;//
@@ -65,14 +59,6 @@ public class SentParamDto {
     //      33 00 00 00  =51   int      ===      51, 0, 0, 0,
     //      00 00 00 00  =0    int      ===      0, 0, 0, 0,
     //      00 00 00 00  =0    int      ===      0, 0, 0, 0
-
-
-
-
-
-
-
-
 
     public int getStartStop() {
         return startStop;

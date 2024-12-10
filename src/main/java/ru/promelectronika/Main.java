@@ -6,19 +6,13 @@ import ru.promelectronika.dto.SentParamDto;
 import ru.promelectronika.dto.ReceivedParamDto;
 import ru.promelectronika.enums.ColorTuner;
 import ru.promelectronika.http.ServerHttp;
-
-import java.awt.*;
 import java.io.IOException;
 import java.net.*;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.*;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class UDPMain2 { // UDP-Client
+public class Main { // UDP-Client
 
     public static InetSocketAddress ownServerIp = new InetSocketAddress("127.0.0.1", 10000);
     public static InetSocketAddress remoteServerIp = new InetSocketAddress("127.0.0.1", 11000);
@@ -39,25 +33,14 @@ public class UDPMain2 { // UDP-Client
         System.out.println(ColorTuner.PURPLE +datagramSocket.getLocalAddress() + "HttpServer port is "+ ColorTuner.RESET);
         ServerHttp.startHttpServer("127.0.0.1", 3060);
         System.out.println(ColorTuner.PURPLE + "HTTP CREATED: " + ServerHttp.getServer().getAddress().getPort()+ ColorTuner.RESET);
-
-        service.scheduleAtFixedRate((new ReceivedMsgRunnable()), 0, 500, TimeUnit.MILLISECONDS);
-        service.scheduleAtFixedRate((new SentMsgRunnable()), 250, 500, TimeUnit.MILLISECONDS);
+        //Runtime.getRuntime().exec(new String[]{"sytemctl", "start", "start_programm"});
+        service.scheduleAtFixedRate((new ReceivedMsgRunnable()), 0, 50, TimeUnit.MILLISECONDS);
+        service.scheduleAtFixedRate((new SentMsgRunnable()), 25, 50, TimeUnit.MILLISECONDS);
 
 
     }
 
-    public static List<SentParamDto> getSentParams() {
-        List<SentParamDto> dtoList = new ArrayList<>();
-        dtoList.add(new SentParamDto(0, 400, 20, 800, 40, 150, 60000, 0, 3, 1, 40, 0, 0));
-        dtoList.add(new SentParamDto(0, 400, 20, 800, 40, 150, 60000, 0, 3, 1, 40, 0, 0));
-        dtoList.add(new SentParamDto(1, 500, 50, 800, 40, 150, 60000, 1, 5, 1, 50, 1, 0));
-        dtoList.add(new SentParamDto(1, 500, 50, 800, 40, 150, 60000, 1, 5, 1, 60, 1, 0));
-        dtoList.add(new SentParamDto(1, 500, 50, 800, 40, 150, 50000, 1, 5, 1, 70, 1, 0));
-        dtoList.add(new SentParamDto(1, 500, 50, 800, 40, 150, 50000, 1, 5, 1, 100, 1, 0));
-        dtoList.add(new SentParamDto(0, 300, 30, 800, 40, 150, 30000, 0, 3, 0, 100, 0, 1));
-        dtoList.add(new SentParamDto(0, 200, 20, 800, 40, 150, 20000, 0, 3, 0, 100, 0, 1));
-        return dtoList;
-    }
+
 
     public static void sendMessageToPoemCCS() {
         if (!DataBaseSimple.getSentMsgDataBase().isEmpty()) {

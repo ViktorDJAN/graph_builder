@@ -27,12 +27,15 @@
                 </select>
                 <button id="connectBtn">connect</button>
             </div>
-            <div>
-                <button id="dischargeBtn" class="btn" value="0" onclick=dischargeContactors() >Разряд</button>
-            </div>
-            <div>
-                <button id="resetBtn" class="btn" value="0" onclick=resetContactors() >Сброс</button>
-            </div>
+
+                <div>
+                    <button id="dischargeBtn" class="btn" value="0" onclick=dischargeContactors() >Разряд</button>
+                </div>
+                <div>
+                    <button id="resetBtn" class="btn" value="0" onclick=resetContactors() >Сброс</button>
+                </div>
+
+
 
             <div class="indicatorArea">
                 <p id="indicatorModbus" class="indicator" style="color:#ea0000;">&#x25CF</p>
@@ -44,10 +47,10 @@
             </div>
             <div class="indicatorAreaMulty">
                 <div class="stages">
-                    <p id="indicatorStage1" class="indicator" style="color:#939191;">&#x25CF</p>
-                    <p id="indicatorStage2" class="indicator" style="color:#939191;">&#x25CF</p>
-                    <p id="indicatorStage3" class="indicator" style="color:#939191;">&#x25CF</p>
-                    <p id="indicatorStage4" class="indicator" style="color:#939191;">&#x25CF</p>
+                    <p id="indicatorStage1" class="indicator" >&#x25CF</p>
+                    <p id="indicatorStage2" class="indicator" >&#x25CF</p>
+                    <p id="indicatorStage3" class="indicator" >&#x25CF</p>
+                    <p id="indicatorStage4" class="indicator" >&#x25CF</p>
                 </div>
                 <p>ступени</p>
             </div>
@@ -224,11 +227,7 @@
             </div>
         </div>
         <div class="mainCenter">
-            <!--            <div>-->
-            <!--                <canvas id="myChart"></canvas>-->
-            <!--            </div>-->
-
-            <div style="width:60vw;">
+            <div style="width:70vw;">
                 <canvas id="chart"></canvas>
             </div>
         </div>

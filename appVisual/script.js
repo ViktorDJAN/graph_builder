@@ -1,11 +1,6 @@
 // parameters
 let startStop_Btn = document.getElementById("startStopBtn");
 let cp_Btn = document.getElementById("cpBtn");
-let connect_Btn = document.getElementById("connectBtn");
-let discharge_Btn = document.getElementById("dischargeBtn");
-let reset_Btn = document.getElementById("resetBtn");
-let save_Btn = document.getElementById("saveBtn");
-
 
 let ev_u_Field = document.getElementById("ev_u");
 let ev_i_Field = document.getElementById("ev_i");
@@ -30,7 +25,6 @@ let stage_Indicator2 = document.getElementById("indicatorStage2");
 let stage_Indicator3 = document.getElementById("indicatorStage3");
 let stage_Indicator4 = document.getElementById("indicatorStage4");
 
-
 let checkBoxEv_I = document.getElementById("cb_ev_i");
 let checkBoxEv_U = document.getElementById("cb_ev_u");
 let checkBoxEVSE_I = document.getElementById("cb_evse_i");
@@ -42,37 +36,6 @@ let checkBoxDtMsg = document.getElementById("cb_dt_msg");
 let checkBoxStage = document.getElementById("cb_stage");
 
 ////////////////////////////////////////////////////////////////////////////////////////
-const sentParamDto = {
-    startStop: 0,
-    ev_u: 0,
-    ev_i: 0,
-    ev_maxU: 0,
-    ev_maxI: 0,
-    ev_maxP: 0,
-    timeCharge: 0,
-    cp_on: 0,
-    err_code: 0,
-    ready: 0,
-    soc: 0,
-    contactorStatus: 0,
-    protocol: 0
-}
-
-const receivedParamDto = {
-    evse_u: 0,
-    evse_i: 0,
-    evse_maxU: 0,
-    evse_maxI: 0,
-    evse_maxP: 0,
-    cp_u: 0,
-    cp_freq: 0,
-    cp_dutyCycle: 0,
-    dt_message: 0,
-    stage: 0,
-    contactorRequest: 0
-}
-
-
 
 // mapping gotten data to object so as, to give out from it values to the dom-components
 function parseReceivedDataToDto(arrayWithReceivedData) {
@@ -120,13 +83,8 @@ const gatherDomComponentsDataToSentParamObj = () => {
         protocol: protocol_Field.value
     }
     console.log(protocol_Field.value)
-   return sentParamDto;
-
-
+    return sentParamDto;
 }
-
-
-let counter = 0;
 
 function getDataXMLHttpRequest() {
     var xhr = new XMLHttpRequest();
@@ -134,25 +92,21 @@ function getDataXMLHttpRequest() {
     xhr.setRequestHeader('Content-Type', 'text/plain');
     xhr.send();
     const jsonString = xhr.response;
-
-
     const jsonObj = new Function('return ' + jsonString)(); // string to json obj
     let receivedDto;
 
-    try { // increases our x-axis
-        console.log(jsonObj["sentData"])
+    try {
         if ((jsonObj["sentData"] !== undefined && jsonObj["sentData"] !== null) ||
             (jsonObj["receivedData"] !== undefined && jsonObj["receivedData"] !== null)) {
             chart1.data.labels.push(new Date());// increases our x-axis
         }
-
-
+        // building graphs with outgoing params  __________________________
         if (jsonObj["sentData"] !== null && jsonObj["sentData"] !== undefined) {
-            // building graphs with outgoing params  __________________________
             buildGraphBaseOnCheckBoxesStates("ev_u", dataSetEV_U, jsonObj["sentData"], checkBoxEv_U);
             buildGraphBaseOnCheckBoxesStates("ev_i", dataSetEV_I, jsonObj["sentData"], checkBoxEv_I);
 
         }
+        // building graphs with incoming params  __________________________
         if (jsonObj["receivedData"] !== null && jsonObj["receivedData"] !== undefined) {
             receivedDto = parseReceivedDataToDto(jsonObj["receivedData"]);
             giveOutDataFromReceivedDtoToDomComponents(receivedDto)
@@ -163,13 +117,24 @@ function getDataXMLHttpRequest() {
             buildGraphBaseOnCheckBoxesStates("cp_DutyCicle", dataSetCP_DutyCycle, jsonObj["receivedData"], checkBoxCPDutyCycle);
             buildGraphBaseOnCheckBoxesStates("dt_message", dataSetDt_message, jsonObj["receivedData"], checkBoxDtMsg);
             buildGraphBaseOnCheckBoxesStates("stage", dataSetStage, jsonObj["receivedData"], checkBoxStage);
+            let currentStage = Number(jsonObj["receivedData"]["stage"]);
+            renderIndicators(currentStage);
         }
-
     } catch (e) {
         console.log('Empty object')
     }
 
 }
+
+//sending data to java
+function postChosenParamsToJava() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://127.0.0.1:3060/postDataToJava", false);
+    xhr.setRequestHeader('Content-Type', 'text/plain');
+    xhr.send(JSON.stringify(gatherDomComponentsDataToSentParamObj()));
+}
+
+
 
 function startCharge() {
     if (startStop_Btn.value === "0") {
@@ -191,37 +156,52 @@ function toggleCp() {
     }
 }
 
-let contactorsStatus = "0"; //todo: To move variable up
+let contactorsStatus = "0";
 function dischargeContactors() {
     if (contactorsStatus === "0") {
         contactorsStatus = "1";
         console.log("contactors locked: " + contactorsStatus)
     }
 }
-function resetContactors(){
-    if(contactorsStatus==="1"){
-        contactorsStatus="0";
+
+function resetContactors() {
+    if (contactorsStatus === "1") {
+        contactorsStatus = "0";
         console.log("contactors unlocked: " + contactorsStatus)
 
     }
 }
 
-
-
-//sending data to java
-function postChosenParamsToJava(){
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST","http://127.0.0.1:3060/postDataToJava",false);
-    xhr.setRequestHeader('Content-Type', 'text/plain');
-    xhr.send(JSON.stringify(gatherDomComponentsDataToSentParamObj()));
-
+function renderIndicators(stageState) {
+    if (stageState === 1) {
+        stage_Indicator1.style.color = "green";
+        stage_Indicator2.style.color = "#939191";
+        stage_Indicator3.style.color = "#939191";
+        stage_Indicator4.style.color = "#939191";
+    } else if (stageState === 2) {
+        stage_Indicator1.style.color = "green";
+        stage_Indicator2.style.color = "green";
+        stage_Indicator3.style.color = "#939191";
+        stage_Indicator4.style.color = "#939191";
+    } else if (stageState === 3) {
+        stage_Indicator1.style.color = "green";
+        stage_Indicator2.style.color = "green";
+        stage_Indicator3.style.color = "green";
+        stage_Indicator4.style.color = "#939191";
+    } else if (stageState === 4) {
+        stage_Indicator1.style.color = "green";
+        stage_Indicator2.style.color = "green";
+        stage_Indicator3.style.color = "green";
+        stage_Indicator4.style.color = "green";
+    } else {
+        stage_Indicator1.style.color = "#939191";
+        stage_Indicator2.style.color = "#939191";
+        stage_Indicator3.style.color = "#939191";
+        stage_Indicator4.style.color = "#939191";
+    }
 }
 
-setInterval(postChosenParamsToJava, 1000);
-setInterval(getDataXMLHttpRequest, 1000);
-
-
-// time delay
+// time delay  ! NOTE it's unused however is very need so it's time delay in JS
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 // await sleep(500);
 
@@ -245,13 +225,6 @@ async function buildGraph(paramName, dataSet, array) {
     }
 }
 
-function buildAxisX() {
-    chart1.data.labels.push(counter);
-    counter++;
-    console.log(counter)
-
-}
-
 
 async function transform(data) {
     let a = Number(data);
@@ -259,7 +232,7 @@ async function transform(data) {
         return a
 }
 
-
+// Chart js , everything for assembling graph
 let dataSetEV_U = createDataSet("EV_U", "#a8acfd", "#a8acfd");
 let dataSetEVSE_U = createDataSet("EVSE_U", "#004891", "#004891");
 let dataSetEV_I = createDataSet("EV_I", "#6fff6f", "#6fff6f");
@@ -270,8 +243,6 @@ let dataSetCP_DutyCycle = createDataSet("CP_DutyCycle", "#b05800", "#b05800");
 let dataSetDt_message = createDataSet("Dt_message", "#ff00ff", "#ff00ff");
 let dataSetStage = createDataSet("Stage", "#ff0000", "#ff0000");
 
-
-const ctx = document.getElementById('myChart');
 
 function createDataSet(label, backgroundColor, borderColor) {
     return {
@@ -314,4 +285,9 @@ var chart1;
 window.onload = function () {
     chart1 = new Chart(document.getElementById('chart'), config);
 };
+
+
+// run methods
+setInterval(postChosenParamsToJava, 50);
+setInterval(getDataXMLHttpRequest, 50);
 
