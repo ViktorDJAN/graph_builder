@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div class="heading">
+        <div class="upperHeading">
+            <div>
+                <button id = "saveBtn" class="btn">Save</button>
+            </div>
+        </div>
+        <div class="lowerHeading">
+            <div>
+                <button id="startStopBtn" class="btn" value="0" onclick=startCharge() >Start Charge</button>
+            </div>
+            <div>
+                <button id="cpBtn" class="btn" value = "0" onclick=toggleCp()>CP</button>
+            </div>
+
+            <div class="buttonWithSelect">
+                <select>
+                    <option id="portSelectBtn">COM</option>
+                </select>
+                <button id="connectBtn">connect</button>
+            </div>
+
+                <div>
+                    <button id="dischargeBtn" class="btn" value="0" onclick=dischargeContactors() >Разряд</button>
+                </div>
+                <div>
+                    <button id="resetBtn" class="btn" value="0" onclick=resetContactors() >Сброс</button>
+                </div>
+
+
+
+            <div class="indicatorArea">
+                <p id="indicatorModbus" class="indicator" style="color:#ea0000;">&#x25CF</p>
+                <p>modbus</p>
+            </div>
+            <div class="indicatorArea">
+                <p id="indicatorContactor" class="indicator" style="color:#939191;">&#x25CF</p>
+                <p>контактор</p>
+            </div>
+            <div class="indicatorAreaMulty">
+                <div class="stages">
+                    <p id="indicatorStage1" class="indicator" >&#x25CF</p>
+                    <p id="indicatorStage2" class="indicator" >&#x25CF</p>
+                    <p id="indicatorStage3" class="indicator" >&#x25CF</p>
+                    <p id="indicatorStage4" class="indicator" >&#x25CF</p>
+                </div>
+                <p>ступени</p>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="mainLeft">
+            <p class="textHeading">Протокол взаимодействия</p>
+
+            <div id="choseProtocolId" class="chooseProtocolField">
+                <select id="selectProtocolId" onc>
+                    <option id="protocolId1" value="1">ISO 15118</option>
+                    <option id="protocolId2"value="0">DIN 70121</option>
+                </select>
+            </div>
+
+            <div class="maxValues">
+                <div class="maxValuesArea">
+                    <p class="textHeading">Максимальные значения</p>
+
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Ток, А</p>
+                        </div>
+                        <div class="plainField"><input id="ev_maxI" class="field1" name="sd" type="text"
+                                                       value="0"></div>
+                    </div>
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Напряжение, В</p>
+                        </div>
+                        <div class="plainField"><input id="ev_maxU" class="field1" name="sd" type="text"
+                                                       value="0"></div>
+                    </div>
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Мощность, кВт</p>
+                        </div>
+                        <div class="plainField"><input id="ev_maxP" class="field1" name="sd" type="text"
+                                                       value="0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="givenValues">
+                <div class="givenValuesArea">
+                    <p class="textHeading">Заданные значения</p>
+
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Ток, А</p>
+                        </div>
+                        <div class="plainField"><input id="ev_i" class="field1" name="sd" type="text"
+                                                       value="0"></div>
+                    </div>
+
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Напряжение, В</p>
+                        </div>
+                        <div class="plainField"><input id="ev_u" class="field1" name="sd" type="text"
+                                                       value="0"></div>
+                    </div>
+
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Время сессии, сек</p>
+                        </div>
+                        <div class="plainField"><input id="timecharge " class="field1" name="sd" type="text"
+                                                       value="0"></div>
+                    </div>
+
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Процент заряда, %</p>
+                        </div>
+                        <div class="plainField"><input id="soc" class="field1" name="sd" type="text"
+                                                       value="0"></div>
+                    </div>
+
+
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">EV_ErrorCode</p>
+                        </div>
+                        <div class="plainField">
+                            <select id="selectErrorCodeId" class="selector1" name="inputTitle">
+                                <option id="optionNoError" value="0">No error</option>
+                                <option id="optionRessTemp" value="1">Ress_temp</option>
+                                <option id="optionRessShift" value="2">Ress_shift</option>
+                                <option id="optionConnLock" value="3">Conn_lock</option>
+                                <option id="optionMalfunc" value="4">Malfunc</option>
+                                <option id="optionCurrDiff" value="5">Curr_diff</option>
+                                <option id="optionVoltDut" value="6">Volt_Out</option>
+                                <option id="optionResA" value="7">Res_A</option>
+                                <option id="optionIncompat" value="8">Incompat</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">EV_Ready</p>
+                        </div>
+                        <div class="plainField">
+                            <select id="selectReady" class="selector1" name="inputTitle">
+                                <option id="optionFalse" value="0" >false</option>
+                                <option id="optionTrue" value="1">true</option>
+                                <option id="optionRes1" value="2">res1</option>
+                                <option id="optionRes2" value="3">res2</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="paramsStation">
+                <p class="textHeading">Параметры станции</p>
+                <table class="stationMaxParamsArea">
+                    <p class="textHeading">Максимальные значения</p>
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Ток, А</p>
+                        </div>
+                        <div class="plainField"><input  id="evse_maxI"  readonly="readonly" class="field1ReadOnly" name="sd" type="text"
+                                                       value="500"></div>
+                    </div>
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Напряжение, В</p>
+                        </div>
+                        <div class="plainField"><input  id="evse_maxU" readonly="readonly" class="field1ReadOnly" name="sd" type="text"
+                                                       value="500"></div>
+                    </div>
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Мощность, кВт</p>
+                        </div>
+                        <div class="plainField"><input  id="evse_maxP" readonly="readonly" class="field1ReadOnly" name="sd" type="text"
+                                                       value="500"></div>
+                    </div>
+                </table>
+
+                <table class="stationMaxParamsArea">
+                    <p class="textHeading">Текущие значения</p>
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Ток, А</p>
+                        </div>
+                        <div class="plainField"><input id="evse_I"  readonly="readonly" class="field1ReadOnly" name="sd" type="text"
+                                                       value="500"></div>
+                    </div>
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Напряжение, В</p>
+                        </div>
+                        <div class="plainField"><input id="evse_U"  readonly="readonly" class="field1ReadOnly" name="sd" type="text"
+                                                       value="500"></div>
+                    </div>
+                    <div class="inputItem">
+                        <div class="plainFieldLeftPart">
+                            <p class="inputTitle">Стадия</p>
+                        </div>
+                        <div class="plainField"><input id="stage"  readonly="readonly" class="field1ReadOnly" name="sd" type="text"
+                                                       value="500"></div>
+                    </div>
+                </table>
+
+            </div>
+        </div>
+        <div class="mainCenter">
+            <div style="width:70vw;">
+                <canvas id="chart"></canvas>
+            </div>
+        </div>
+        <div class="mainRight">
+            <p class="textHeading">Контролирумые параметры</p>
+
+            <div class="line">
+                <input class="paramChBox" type="checkbox" id="cb_ev_i" name="vehicle1" value="Bike">
+                <label class="labelName" for="cb_ev_i">Запрашиваемый ток</label>
+                <p style="color:#6fff6f; font-size:xx-large">&#x25A0;</p>
+            </div>
+            <div class="line">
+                <input class="paramChBox" type="checkbox" id="cb_evse_i" name="vehicle1" value="Bike">
+                <label class="labelName" for="cb_evse_i">Выдаваемый ток</label>
+                <p style="color:#008000; font-size:xx-large">&#x25A0;</p>
+            </div>
+
+            <div class="line">
+                <input class="paramChBox" type="checkbox" id="cb_ev_u" name="vehicle1" value="Bike">
+                <label class="labelName" for="cb_ev_u">Запрашиваемое напряжение</label>
+                <p style="color:#a8acfd; font-size:xx-large">&#x25A0;</p>
+            </div>
+            <div class="line">
+                <input class="paramChBox" type="checkbox" id="cb_evse_u" name="vehicle1" value="Bike">
+                <label class="labelName" for="cb_evse_u">Выдаваемое напряжение</label>
+                <p style="color:#004891; font-size:xx-large">&#x25A0;</p>
+            </div>
+            <div class="line">
+                <input class="paramChBox" type="checkbox" id="cb_cp_u" name="vehicle1" value="Bike">
+                <label class="labelName" for="cb_cp_u">Напряжение СР</label>
+                <p style="color:#ff8000; font-size:xx-large">&#x25A0;</p>
+            </div>
+            <div class="line">
+                <input class="paramChBox" type="checkbox" id="cb_cp_freq" name="vehicle1" value="Bike">
+                <label class="labelName" for="cb_cp_freq">Частота СР</label>
+                <p style="color:#ffb76f; font-size:xx-large">&#x25A0;</p>
+            </div>
+            <div class="line">
+                <input class="paramChBox" type="checkbox" id="cb_cp_duty_cycle" name="vehicle1" value="Bike">
+                <label class="labelName" for="cb_cp_duty_cycle">DutyCycle CP</label>
+                <p style="color:#b05800; font-size:xx-large">&#x25A0;</p>
+            </div>
+            <div class="line">
+                <input class="paramChBox" type="checkbox" id="cb_dt_msg" name="vehicle1" value="Bike">
+                <label class="labelName" for="cb_dt_msg">Задержка сообщений</label>
+                <p style="color:#ff00ff; font-size:xx-large">&#x25A0;</p>
+            </div>
+            <div class="line">
+                <input class="paramChBox" type="checkbox" id="cb_stage" name="vehicle1" value="Bike">
+                <label class="labelName" for="cb_stage">Стадия заряда</label>
+                <p style="color:#ff0000; font-size:xx-large">&#x25A0;</p>
+            </div>
+
+
+            <br>
+
+
+        </div>
+    </div>
+
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+<script src="chart/lib/liteChart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
+
+
+</body>
+</html>
